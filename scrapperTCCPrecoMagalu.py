@@ -25,7 +25,7 @@ def RasparLista(livros):
         time.sleep(7)
         data = driver.page_source
         soup = BeautifulSoup(data, 'html.parser')
-        cards = soup.find_all('li', class_=["sc-APcvf eJDyHN"] )
+        cards = soup.find_all('li', class_=["sc-kTbCBX ciMFyT"] )
 
         livrosRaspados = []
         i = 0
@@ -43,12 +43,12 @@ def RasparLista(livros):
                     break 
                 
                 if card is not None:
-                    titulo_magalu = card.find('h2', class_=["sc-eWzREE uaEbk"]).text.strip()
+                    titulo_magalu = card.find('h2', class_=["sc-fvwjDU fbccdO"]).text.strip()
                     
                     if str(titulo_quebrado[0].lower()) in titulo_magalu.lower():
                         i+=1
-                        preco = card.find('p', class_=["sc-kpDqfm eCPtRw sc-hoLEA kXWuGr"])
-                        link = card.find('a', class_=["sc-eBMEME uPWog sc-gppfCo egZavq sc-gppfCo egZavq"])
+                        preco = card.find('p', class_=["sc-kpDqfm efxPhd sc-gEkIjz jmNQlo"])
+                        link = card.find('a', class_=["sc-eBMEME uPWog sc-cDnByv dgyHCD sc-cDnByv dgyHCD"])
                         link_text = "https://www.magazineluiza.com.br/" + link['href']
                         
                         img = card.find('img', class_=["sc-cWSHoV bLJsBf"])

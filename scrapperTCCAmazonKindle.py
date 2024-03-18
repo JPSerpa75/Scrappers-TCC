@@ -272,37 +272,64 @@ def scrapperLivros():
 
     cursor = db.cursor()
 
-   
-    sql = "select l.id_livro, l.isbn_10_livro, l.isbn_13_livro, il.id_info_livro, il.titulo_livro, c.id_capa, c.ds_capa, pa.id_preco_amazon, pa.link_amazon "
+    sql = "select count(*) "
     sql = sql + "from livro l "
     sql = sql + "inner join info_livro il on il.id_info_livro = l.id_info_livro "
     sql = sql + "inner join capa c on c.id_capa = l.id_capa "
     sql = sql + "inner join autor a on a.id_autor = il.id_autor "
     sql = sql + "inner join preco_amazon pa on pa.id_livro = l.id_livro "
     sql = sql + "where c.ds_capa != 'eBook Kindle' "
-    sql = sql + "order by l.id_livro desc limit 50; "
 
-    print(sql)
     cursor.execute(sql)
-    resultado = cursor.fetchall()
-
-    livros = []
-    for registro in resultado:
-        livro_info = {
-        'id': registro[0],
-        'isbn10': registro[1],
-        'isbn13': registro[2],
-        'idInfoLivro': registro[3],
-        'titulo': registro[4],
-        'idCapa': registro[5],
-        'capa': registro[6],        
-        'idPrecoAmazon': registro[7],
-        'linkAmazon': registro[8],
+    countLinhas = cursor.fetchall()
+    countLinhas = countLinhas[0][0]
+   
+    qtdPaginas = 1
+    if int(countLinhas) > 50:
+        qtdPaginas = int(countLinhas / 50)
+        if countLinhas % 50 != 0:
+            qtdPaginas += 1 
+        
+    tamanhoPagina = 50
+    paginas = []
+    for i in range(qtdPaginas):
+        pagina = {
+            'offset': i * tamanhoPagina
         }
+        paginas.append(pagina)
+        
 
-        livros.append(livro_info)
+    for pagina in paginas:
+        sql = "select l.id_livro, l.isbn_10_livro, l.isbn_13_livro, il.id_info_livro, il.titulo_livro, c.id_capa, c.ds_capa, pa.id_preco_amazon, pa.link_amazon "
+        sql = sql + "from livro l "
+        sql = sql + "inner join info_livro il on il.id_info_livro = l.id_info_livro "
+        sql = sql + "inner join capa c on c.id_capa = l.id_capa "
+        sql = sql + "inner join autor a on a.id_autor = il.id_autor "
+        sql = sql + "inner join preco_amazon pa on pa.id_livro = l.id_livro "
+        sql = sql + "where c.ds_capa != 'eBook Kindle' "
+        sql = sql + "order by l.id_livro asc limit " + str(tamanhoPagina) + " offset " + str(pagina['offset']) + ";"
 
-    rasparLivros(livros)
+        print(sql)
+        cursor.execute(sql)
+        resultado = cursor.fetchall()
+
+        livros = []
+        for registro in resultado:
+            livro_info = {
+            'id': registro[0],
+            'isbn10': registro[1],
+            'isbn13': registro[2],
+            'idInfoLivro': registro[3],
+            'titulo': registro[4],
+            'idCapa': registro[5],
+            'capa': registro[6],        
+            'idPrecoAmazon': registro[7],
+            'linkAmazon': registro[8],
+            }
+
+            livros.append(livro_info)
+
+        rasparLivros(livros)
 
 limparBd()
 scrapperLivros()
